@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './db.js';
+import { runSync } from './sync.js';
 
 dotenv.config();
 
@@ -22,6 +23,15 @@ app.get('/health', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({status: 'error', message: 'db connection failed'});
+    }
+});
+
+app.post(`/api/sync`, async (req, res) => {
+    try {
+        await runSync();
+        res.json({status: 'success', message: 'data synced successfully'});
+    } catch(err) {
+        res.status(500).json({status: 'error', message: 'failed to sync data'});
     }
 });
 
