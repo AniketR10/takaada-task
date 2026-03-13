@@ -1,0 +1,15 @@
+{
+  "customers": [
+    { "id": "cus_001", "name": "Acme Corp", "email": "billing@acme.com" },
+    { "id": "cus_002", "name": "Globex", "email": "accounts@globex.io" }
+  ],
+  "invoices": [
+    { "id": "inv_101", "customer_id": "cus_001", "amount": 5000, "status": "OPEN", "due_date": "2026-03-01T00:00:00Z" },
+    { "id": "inv_102", "customer_id": "cus_001", "amount": 1200, "status": "PAID", "due_date": "2026-02-15T00:00:00Z" },
+    { "id": "inv_103", "customer_id": "cus_002", "amount": 8500, "status": "OPEN", "due_date": "2026-04-01T00:00:00Z" }
+  ],
+  "payments": [
+    { "id": "pay_901", "invoice_id": "inv_102", "amount": 1200, "date": "2026-02-10T00:00:00Z" },
+    { "id": "pay_902", "invoice_id": "inv_101", "amount": 2000, "date": "2026-03-05T00:00:00Z" }
+  ]
+}

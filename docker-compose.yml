@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mock-api:
+    image: clue/json-server
+    ports:
+      - "3001:80"
+    volumes:
+      - ./db.json:/data/db.json
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: takaada
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
