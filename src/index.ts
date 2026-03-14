@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './db.js';
 import { runSync } from './sync.js';
+import { getCustomerBalance, getOverdueInvoices } from './insights.js';
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.post(`/api/sync`, async (req, res) => {
         res.status(500).json({status: 'error', message: 'failed to sync data'});
     }
 });
+
+app.get('/api/insights/customers/:id/balance', getCustomerBalance);
+app.get('/api/insights/invoices/overdue', getOverdueInvoices);
 
 app.listen(port, () => {
     console.log(` service is running on http://localhost:${port}`);
