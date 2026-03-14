@@ -3,21 +3,40 @@ import pool from "./db.js";
 
 const MOCK_API_URL = process.env.MOCK_API_URL || 'http://localhost:3001';
 
+async function fetchPaginatedData(endpoint: string) {
+    let allData: any[] = [];
+    let page = 1;
+    const limit = 5;
+
+    console.log(`fetching ${endpoint} paginated...`);
+    
+    while(true) {
+        const res = await axios.get(`${MOCK_API_URL}/${endpoint}?_page=${page}&_limit=${limit}`);
+        const data = res.data;
+
+        if(!data || data.length === 0) {
+            break;
+        }
+
+        allData = allData.concat(data);
+        console.log(`fetched page ${page} of ${endpoint} (${data.length} records)`);
+        page++;
+    }
+    return allData;
+}
+
 export async function runSync() {
     const client = await pool.connect();
 
     try {
-        console.log('starting integration sync...');
+        console.log('starting integration sync with pagination...');
 
-        const [customerRes, invoiceRes, paymentRes] = await Promise.all([
-            axios.get(`${MOCK_API_URL}/customers`),
-            axios.get(`${MOCK_API_URL}/invoices`),
-            axios.get(`${MOCK_API_URL}/payments`),
-        ]);
+       const [customers, invoices, payments] = await Promise.all([
+        fetchPaginatedData('customers'),
+        fetchPaginatedData('invoices'),
+        fetchPaginatedData('payments')
+         ]);
 
-        const customers = customerRes.data;
-        const invoices = invoiceRes.data;
-        const payments = paymentRes.data;
 
         await client.query('BEGIN');
 
@@ -58,7 +77,7 @@ export async function runSync() {
         await client.query('COMMIT');
         console.log('sync completed successfully!');
     } catch(err) {
-        await client.query('ROLLBACK'),
+        await client.query('ROLLBACK');
         console.error('sync failed, rolled back db changes', err);
         throw err;
     } finally {
